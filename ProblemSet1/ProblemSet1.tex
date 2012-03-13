@@ -1,0 +1,141 @@
+%\documentclass[11pt,reqno]{amsart}
+\documentclass[11pt,reqno]{article}
+\usepackage[margin=.8in, paperwidth=8.5in, paperheight=11in]{geometry}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent7
+\usepackage{graphicx}
+\usepackage{pstricks}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage{caption}
+\pagestyle{plain}
+%\renewcommand{\topfraction}{0.3}
+%\renewcommand{\bottomfraction}{0.8}
+%\renewcommand{\textfraction}{0.07}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Foundations of Computer Architecture: \\ Problem Set 1 }
+\author{Andrew Rickert}
+\date{Professor: Dr. Horace Malcolm \\ \hspace{-25pt} Due Date: February 6,  2012}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+
+% Page 1
+\begin{flushleft} 
+Problem 1 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+\framebox{Part a}\\ 
+
+We let $T_B$ and $T_A$ be the execution time before and after the speed up respectively. Similarly we let $CPI^B_M$ and $CPI^A_M$ be the $CPI$ of the multiply instruction before and after the speed up respectively. We will use $CPI_O$ to denote the average $CPI$ of the other instructions. \\
+If $I_T$ is the total number of instructions, and $C_R$ is the clock rate then the expressions for $T_A$ and $T_B$ are:
+\begin{eqnarray*}
+T_A &=& \frac{CPI^A_M \cdot(0.22 I_T) + CPI_O \cdot (0.78 I_T)}{C_R} \\
+T_B &=& \frac{CPI^B_M \cdot(0.22 I_T) + CPI_O \cdot (0.78 I_T)}{C_R}
+\end{eqnarray*}
+
+The speedup is defined as the ratio of the execution time before the speed up to after the speed up. The following calculation gives an expression for the speed up:
+\begin{eqnarray*}
+\text{Speed up} = \frac{T_B}{T_A} &=&  \frac{\frac{CPI^B_M \cdot(0.22 I_T) + CPI_O \cdot (0.78 I_T)}{C_R}}{\frac{CPI^A_M \cdot(0.22 I_T) + CPI_O \cdot (0.78 I_T)}{C_R}} \\
+&=& \frac{CPI^B_M \cdot(0.22 I_T) + CPI_O \cdot (0.78 I_T)}{CPI^A_M \cdot(0.22 I_T) + CPI_O \cdot (0.78 I_T)} \\
+&=& \frac{CPI^B_M \cdot 0.22 + CPI_O \cdot 0.78}{CPI^A_M \cdot 0.22 + CPI_O \cdot 0.78}
+\end{eqnarray*} \\
+
+So the equation for the speed up is 
+\begin{equation}
+\text{Speed Up} =  \frac{CPI^B_M \cdot 0.22 + CPI_O \cdot 0.78}{CPI^A_M \cdot 0.22 + CPI_O \cdot 0.78} \label{eqn:speedup}
+\end{equation}
+
+Using the values given in the problem we have 
+\[ \text{Speed Up} =  \frac{CPI^B_M \cdot 0.22 + CPI_O \cdot 0.78}{CPI^A_M \cdot 0.22 + CPI_O \cdot 0.78} =  \frac{4 \cdot 0.22 + 4 \cdot 0.78}{3 \cdot 0.22 + 4 \cdot 0.78} = 1.06 \]
+
+\newpage
+\noindent\framebox{Part b}\\ 
+
+If we solve equation in $(\ref{eqn:speedup})$ for $CPI^B_M$ in terms of the speed up then we have the $CPI$ before the speed up in terms of the given value for the speed up. This will solve the problem. Performing the required algebra on equation $(\ref{eqn:speedup})$ gives the following:
+\begin{eqnarray*}
+CPI^B_M &=& \frac{1}{0.22} \text{SpeedUp} \cdot (0.22 \cdot CPI^A_M + 0.78 \cdot CPI_O) - \frac{1}{0.22} 0.78 \cdot CPI_O \\
+		&=& \frac{1}{0.22} \text{1.76} \cdot (0.22 \cdot 3 + 0.78 \cdot 4) - \frac{1}{0.22} 0.78 \cdot 4\\
+		&\backsimeq& 16
+\end{eqnarray*}
+
+
+
+\begin{flushleft} 
+Problem 2 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+\framebox{Part a}\\ 
+
+The clock rate, $C_R$ of the processor, is the inverse of cycle time so 
+\[ C_R = \frac{1}{\text{Cycle Time}} = \frac{1}{50 \cdot 10^{-12}} = \frac{1000 \cdot 10^9}{50} = 20 \cdot 10^9, \; \text{which is  20 GHz}\]
+We would also like to calculate the total number of clock cycles for the program. We let $CPI_D$ and $CPI_O$ be the $CPI$ of the division instruction and the other instructions respectively. If $I_T$ is the total number of instructions then the total clock cycles $CC_T$ is 
+\begin{eqnarray} 
+CC_T &=& CPI_D \cdot 0.1 \cdot I_T +  CPI_O \cdot 0.9 \cdot I_T  \label{eqn:totalclocks} \\
+	   &=& 12 \cdot 0.1 \cdot 20 \cdot 10^6 + 4 \cdot 0.9 \cdot 20 \cdot 10^6 = 96 \cdot 10^6 \; \text{instructions} \nonumber
+\end{eqnarray}
+
+\noindent \framebox{Part b}\\ 
+
+We will need to find the number of clock cycles before $CC_T^B$ and after $CC_T^A$ the speed up. The value for before the speed up was calculated in the part a of this problem as $CC_T^B = 96 \cdot 10^6$ instructions. To calculate the number of clock cycles after the speed up we use equation $(\ref{eqn:totalclocks})$ again to get
+\begin{eqnarray*} 
+CC_T^A &=& CPI_D \cdot 0.1 \cdot I_T +  CPI_O \cdot 0.9 \cdot I_T  \\
+	   &=& 2 \cdot 0.1 \cdot 20 \cdot 10^6 + 4 \cdot 0.9 \cdot 20 \cdot 10^6 = 76 \cdot 10^6 \; \text{instructions}
+\end{eqnarray*}
+
+If $C_R$ is the clock rate, and $T_B$,$T_A$ are the execution times before and after the speed up then the speed up can be calculated:
+\[ \text{Speed Up} =  \frac{T_B}{T_A} = \frac{\frac{CC_T^B}{C_R}}{\frac{CC_T^A}{C_R}} = \frac{CC_T^B}{CC_T^A} = \frac{96 \cdot 10^6}{76 \cdot 10^6} = 1.26\]
+
+\noindent \framebox{Part c}\\ 
+
+With a single issue processor fastest we can process an instruction is in 1 clock cycle. So, the minimum CPI is 1.
+
+\newpage
+\noindent \framebox{Part d}\\ 
+
+By using equation $(\ref{eqn:totalclocks})$ again and taking the minimum $CPI$ for division as $CPI_D = 1$ we can calculate the number of clock cycles for the program as\\
+\[ CC_{min} = CPI_D \cdot 0.1 \cdot I_T  + CPI_O \cdot 0.9 \cdot I_T  = 1\cdot 0.1 \cdot 20 \cdot 10^6 + 4 \cdot 0.9 \cdot 20 \cdot 10^6  = 74 \cdot 10^6 \; \text{instructions}\]
+Performing the same calculation as in part b gives
+\[ \text{Speed Up} =  \frac{T_B}{T_A} = \frac{\frac{CC_T^B}{C_R}}{\frac{CC_{min}}{C_R}} = \frac{CC_T^B}{CC_{min}} = \frac{96 \cdot 10^6}{74 \cdot 10^6} = 1.30\]
+
+\begin{flushleft} 
+Problem 3 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+\framebox{Part a}\\ 
+
+The average $CPI$ for the instruction sequence can be calculated as the total number of clock cycles divided by the total number of instructions in the sequence. The subscript in each $CPI$ will refer to the which instruction the CPI is for. So, the average is 
+\begin{eqnarray*}
+CPI_{average} &=& \frac{4\cdot CPI_{addi} + 1\cdot CPI_{sub} +  2 \cdot CPI_{lw}  + 2 \cdot CPI_{sw}}{4+1+2+2} \\
+			&=& \frac{4\cdot 4 + 1 \cdot 5 + 2 \cdot 8 + 2 \cdot 6}{4+1+2+2} \\
+			&=& \frac{49}{9} = 5.44
+\end{eqnarray*}
+
+\noindent\framebox{Part b}\\ 
+
+The derived formula for $MIPS$ can be used directly with $C_R$ as the clock rate:
+\begin{equation*}
+MIPS = \frac{C_R}{CPI_{average} \cdot 10^6} =  \frac{4 \cdot 10^9}{5.44 \cdot 10^6} = 735 \; \text{million instructions per second}
+\end{equation*}
+
+
+\noindent \framebox{Part c}\\ 
+
+The peak $MIPS$ is found by finding an instruction set that minimizes the $CPI$. Since the $addi$ instruction has the least clock cycles required the best possible (but unrealistic) sequece of instruction consists of all $addi$ instructions. The $CPI$ would then be 4 so the peak $MIPS$ is 
+\begin{equation*}
+MIPS = \frac{C_R}{CPI_{min} \cdot 10^6} = \frac{4 \cdot 10^9}{4 \cdot 10^6} =  1000 \; \text{million instructions per second}
+\end{equation*}
+
+
+\noindent \framebox{Part d}\\ 
+
+There are 4 addi, 1 sub, 2 lw, and 2 sw instructions with 6, 5, 8, and 6 clock cycles required respectively the total number of cycles is
+\[ \text{clock cycles} = 4\cdot CPI_{addi} + 1\cdot CPI_{sub} +  2 \cdot CPI_{lw}  + 2 \cdot CPI_{sw} = 4\cdot 4 + 1 \cdot 5 + 2 \cdot 8 + 2 \cdot 6 = 49 \]
+
+\end{document}  

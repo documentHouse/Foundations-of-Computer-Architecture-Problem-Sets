@@ -1,0 +1,180 @@
+%\documentclass[11pt,reqno]{amsart}
+\documentclass[11pt,reqno]{article}
+\usepackage[margin=.8in, paperwidth=8.5in, paperheight=11in]{geometry}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent7
+\usepackage{graphicx}
+\usepackage{pstricks}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage{caption}
+\pagestyle{plain}
+%\renewcommand{\topfraction}{0.3}
+%\renewcommand{\bottomfraction}{0.8}
+%\renewcommand{\textfraction}{0.07}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Foundations of Computer Architecture: \\ Problem Set 2 }
+\author{Andrew Rickert}
+\date{Professor: Dr. Horace Malcolm \\ \hspace{-19pt} Due Date: February 14,  2012}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+
+% Page 1
+\begin{flushleft} 
+Problem 1 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+\framebox{Part a}\\ 
+ First we convert the decimal values to their two's complement representation:
+ \begin{eqnarray*}
+-2147483648_{ten} &=& 10000000000000000000000000000000_{two} \\
+-4_{ten} &=& 11111111111111111111111111111100_{two} \\
+\end{eqnarray*}
+
+\noindent The instruction \emph{addu} \$8,\$9,\$8 will add the contents of \$9 to the contents of \$8 and store the result back in \$8. This is an unsigned addition so there will be no overflow exception. Summing the values in the registers gives the following result
+\[
+\$8 = 01111111111111111111111111111100_{two} = 2147483644_{ten}\\
+\]
+
+\noindent\framebox{Part b}\\ 
+\noindent The instruction \emph{xor} \$9,\$8,\$9 will perform an exclusive-or on the contents of \$8 with the contents of \$9 and store the result back in \$9. Performing the operation gives the following result.
+\[
+\$9 = 01111111111111111111111111111100_{two} = 2147483644_{ten}\\
+\]
+In effect xoring two registers results in the same value as an addition without an overflow exception.
+\begin{flushleft} 
+Problem 2 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+\framebox{Part a}\\ 
+In an excess-$K$ system the intended value is $K$ less than the unsigned binary value. As an unsigned binary value we have
+\[ \text{0xAFFFFFFF}_{hex} = 10101111111111111111111111111111_{two} = 2952790015_{ten} \]
+So the represented value must be $2952790015-2147483648 = 805306367_{excess-2147483648}$\\
+
+\noindent \framebox{Part b}\\ 
+Since the intended value in an excess-$K$ system is $K$ less than the unsigned binary value and the smallest unsigned binary value is 0 then the small representable value is $-65540$.\\
+
+\noindent \framebox{Part c}\\ 
+We indicate below for which given system -128 maybe represented.\\
+
+\noindent I. \hspace{12pt}Excess-128 system\\
+\indent Yes, -128 is represented as 00000000.\\
+
+\noindent II. \hspace{7pt}One's complement\\
+\indent No, the smallest value is -127.\\
+
+\noindent III. \hspace{3pt}Sign and Magnitude\\
+\indent No, the smallest value is -127\\
+
+\noindent IV. \hspace{3pt}Two's complement\\
+\indent Yes, -128 is represented by 11111111\\
+
+\begin{flushleft} 
+Problem 3 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+First we need to convert the decimal value to binary. We keep the leading zeros in the binary expression below to make the number 64 bits.
+\[ 3904679375210100017_{ten} = 0011011000110000001101010011010000110001001100010011010100110001_{two}\]
+
+\noindent Now we need to convert each set of 8 bits to its corresponding decimal then match it to the table that defines the decimal to ASCII conversion.\\
+
+\begin{tabular}{| l | c | c | l |}
+\hline
+Byte Address & Binary Value & Decimal Value &ASCII character represented by contents \\ \hline
+0x10080000 & 00110110 & 54 & 6\\ \hline
+0x10080001 & 00110000 & 48 & 0\\ \hline
+0x10080002 & 00110101 & 53 & 5\\ \hline
+0x10080003 & 00110100 & 52 & 4\\ \hline
+0x10080004 & 00110001 & 49 & 1\\ \hline
+0x10080005 & 00110001 & 49 & 1\\ \hline
+0x10080006 & 00110101 & 53 & 5\\ \hline
+0x10080007 & 00110001 & 49 & 1\\ \hline
+\end{tabular}
+
+\begin{flushleft} 
+Problem 4 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+The table below indicates whether a given item is an architectural feature or an organizational feature.\\
+
+\begin{tabular}{| l | c | c |}
+\hline
+Item & Architectural feature & Organizational feature \\ \hline
+Cache memory & & \checkmark \\ \hline
+Multiplexed I/O bus & & \checkmark \\ \hline
+Indexed addressing mode & \checkmark & \\ \hline
+128-bit CPU registers & \checkmark & \\ \hline
+Flash based storage & & \checkmark \\ \hline
+Vector instruction & \checkmark & \\ \hline
+Micro-programmed control & & \checkmark \\ \hline
+USB-serial I/O port & & \checkmark \\ \hline
+\end{tabular}
+
+\begin{flushleft} 
+Problem 5 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+\framebox{Part a}\\ 
+
+The MIPS instruction sequence for adding an immediate value to a signed value in \$7 consists of one instruction. 
+\[ \text{addi} \; \$7,\$7,15  \quad \quad \# \$7 = \$7 + 15 \] \\
+
+\noindent \framebox{Part b}\\ 
+
+To perform the addition manually first we need to find the two's complement representation of -134217728. Since $134217728_{ten} = 00001000 00000000 00000000 00000000_{two}$ we have 
+\[ -134217728_{ten} = 11111000 00000000 00000000 00000000_{two} \]
+Since $15_{ten} = 00000000 00000000 00000000 00001111_{two}$ we can perform the addition to get the value in register \$7
+\[ \$7 = 11111000 00000000 00000000 00001111_{two} =  -134217713_{ten}\] \\
+
+\noindent \framebox{Part c}\\ 
+
+The main issue is moving the immediate value 15.0 into one of the floating point registers so that addition can be performed on it. Since there is no true-op instruction that loads immediate values into floating point registers we will need a different strategy. The plan will be to move the immediate value into a integer with an \emph{addi} instruction. We will then transfer the value to a floating point register and convert it to a floating point value. At this point we can use the floating point operations. The instruction sequence is as follows:\\
+
+\begin{tabular}{l l l}
+addi \quad &\$t0,\$zero,15 \qquad & \# Load 15 into \$t0\\
+mtc1 \quad &\$t0,\$f0 & \# Move 15 to a floating point register \\
+cvt.s.w \quad &\$f0,\$f6 & \# Convert the integer to a floating point value 15.0\\
+add.s \quad & \$f4,\$f4,\$f6 & \# Perform \$f4 = \$f4 + 15.0 \\ 
+\end{tabular} \\ \\
+
+\noindent \framebox{Part d}\\ 
+
+We are trying to perform the computation with the following values;
+
+ \begin{eqnarray*}
+-134217728_{ten} &=& -1.0_{two} \times 2^{27} \\
+15_{ten} &=& 1.111_{two} \times 2^3 \\
+\end{eqnarray*}
+
+The algorithm for computing a floating point addition says that first we need to find the larger of two exponents for the values and shift the smaller value til the exponents are the same.\newpage \noindent Performing this operation gives:
+
+ \begin{eqnarray*}
+-134217728_{ten} &=& -1.0_{two} \times 2^{27} \\
+15_{ten} &=& 0.00000000 00000000 0000000 1111_{two} \times 2^{27} \\
+\end{eqnarray*}
+
+The significand of a single precision value can only store 23-bits. If we do not round the values and truncate at the 23rd bit then we will have 
+\[ 15_{ten} = 0.00000000 00000000 0000000_{two} \times 2^{27} \]
+
+So the decimal value 15 gets truncated to 0. The final value in the float point register, \$f4 after the addition of zero will be the original value so 
+\[ \$\text{f}4 = -1.0_{two} \times 2^{27} = -134217728 \]
+
+\noindent \framebox{Part e}
+
+We perform the same steps as in the part d of this problem except in this case we round the shifted version of 15 so that we now have:
+ \begin{eqnarray*}
+-134217728_{ten} &=& -1.0_{two} \times 2^{27} \\
+15_{ten} &=& 0.00000000 00000000 0000001 _{two} \times 2^{27} \\
+\end{eqnarray*}
+
+\noindent Adding these values gives
+
+\[ \$\text{f}4 = -0.11111111 11111111 1111111_{two} \times 2^{27} = -11111111 11111111 11111110000_{two} \times 2^0 = -134217712 \]
+\end{document}  

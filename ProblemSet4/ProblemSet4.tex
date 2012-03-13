@@ -1,0 +1,224 @@
+%\documentclass[11pt,reqno]{amsart}
+\documentclass[11pt,reqno]{article}
+\usepackage[margin=.8in, paperwidth=8.5in, paperheight=11in]{geometry}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent7
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{pstricks}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage{caption}
+\pagestyle{plain}
+%\renewcommand{\topfraction}{0.3}
+%\renewcommand{\bottomfraction}{0.8}
+%\renewcommand{\textfraction}{0.07}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Foundations of Computer Architecture: \\ Problem Set 4 }
+\author{Andrew Rickert}
+\date{Professor: Dr. Horace Malcolm \\ \hspace{-19pt} Due Date: February 28,  2012}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+
+% Page 1
+\begin{flushleft} 
+Problem 1 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+The table below describes the truth values for $\overline{X \oplus Y}$ that we use to derive the logical sum of logical products.\\
+
+\setlength{\extrarowheight}{2.0pt}
+\begin{tabular}{| c | c | c | c |}
+\hline
+X & Y & X $\oplus$ Y & $\overline{X \oplus Y}$ \\ \hline
+0 & 0 & 0 & 1 \\ \hline
+0 & 1 & 1 & 0 \\ \hline
+1 & 0 & 1 & 0 \\ \hline
+1 & 1 & 0 & 1 \\ \hline
+\end{tabular}\\ \\
+
+\noindent The 1 terms of $\overline{X \oplus Y}$ are when $X = Y = 0$ and $X = Y = 1$. This leads to the form
+\[ \overline{X \oplus Y} = \overline{X} \cdot \overline{Y} + X \cdot Y \]
+\newpage
+
+\begin{flushleft} 
+Problem 2 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent\framebox{Part a}\\ 
+
+The table below gives the full adder sum $S$ which is composed of operands $X,Y$ and the carry-in value $CI$.\\
+
+\setlength{\extrarowheight}{0pt}
+\begin{tabular}{| c | c | c | c |}
+\hline
+X & Y & CI & S \\ \hline
+0 & 0 & 0 & 0 \\ \hline
+1 & 0 & 0 & 1 \\ \hline
+0 & 1 & 0 & 1 \\ \hline
+1 & 1 & 0 & 0 \\ \hline
+0 & 0 & 1 & 1 \\ \hline
+1 & 0 & 1 & 0 \\ \hline
+0 & 1 & 1 & 0 \\ \hline
+1 & 1 & 1 & 1 \\ \hline
+\end{tabular}\\ \\
+
+\noindent\framebox{Part b}\\ 
+
+\noindent If we let $\land$ denote the xor function then we have the following is the truth table for $X \land Y \land CI$.\\
+
+\begin{tabular}{| c | c | c | c |}
+\hline
+X & Y & CI & $X \land Y \land CI$ \\ \hline
+0 & 0 & 0 & 0 \\ \hline
+1 & 0 & 0 & 1 \\ \hline
+0 & 1 & 0 & 1 \\ \hline
+1 & 1 & 0 & 0 \\ \hline
+0 & 0 & 1 & 1 \\ \hline
+1 & 0 & 1 & 0 \\ \hline
+0 & 1 & 1 & 0 \\ \hline
+1 & 1 & 1 & 1 \\ \hline
+\end{tabular}\\ \\
+
+\noindent The $\land$ table results in the same values as the sum $S$ in the previous part.
+\newpage
+
+\begin{flushleft} 
+Problem 3 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+To answer the question first an expression for the output of the circuit is derived then the expression is simplified.\\
+There are three $AND$ gates lined up vertically in the center of the drawing. The first of these $AND$ gates (the top most) will produce the term $\overline{A \cdot B} \cdot E$. The second $AND$ gate, or middle gate will produce the term $E \cdot F$. The final $AND$ gate, the one at the bottom will produce the term $\overline{C + D} \cdot F$. The final expression is a $NOR$ of these terms which gives the final unsimplified value $V$ as:
+\[ V = \overline{ \overline{A \cdot B} \cdot E + E \cdot F + \overline{C + D} \cdot F } \]
+
+\noindent We know show the simplification derivation:
+\begin{eqnarray*}
+ V &=& \overline{ \overline{A \cdot B} \cdot E + E \cdot F + \overline{C + D} \cdot F } \\
+     &=& \overline{ (\overline{A \cdot B} + F ) \cdot E + \overline{C + D} \cdot F } \qquad \text{By the distributive law}\\
+     &=& \overline{(\overline{A \cdot B} + F ) \cdot E} \cdot \overline {\overline{C + D} \cdot F} \qquad \text{By de morgans law}\\
+     &=& (\overline{(\overline{A \cdot B} + F )} + \overline{E}) \cdot (\overline {\overline{C + D}} + \overline{F}) \qquad \text{By de morgans law}\\
+     &=& (\overline{\overline{A \cdot B}} \cdot \overline{F} + \overline{E}) \cdot (\overline {\overline{C + D}} + \overline{F}) \qquad \text{By de morgans law}\\
+     &=& (A \cdot B \cdot \overline{F} + \overline{E}) \cdot (C + D + \overline{F}) \qquad \text{By double negation}\\
+\end{eqnarray*}
+
+\noindent This is expression $b$. We may use de morgans law to derive another equivalent expression
+\begin{eqnarray*}
+ V &=& (A \cdot B \cdot \overline{F} + \overline{E}) \cdot (C + D + \overline{F}) \\
+     &=& \overline{(A \cdot B \cdot \overline{F} + \overline{E})} + \overline{(C + D + \overline{F})} \ \qquad \text{By de morgans law} \\
+     &=& \overline{(A \cdot B \cdot \overline{F} + \overline{E})} + \overline{(C + D + \overline{F})} \ \qquad \text{By de morgans law} \\
+     &=&\overline{(A \cdot B \cdot \overline{F}} \cdot \overline{\overline{E}}) + \overline{C + D} \cdot \overline{\overline{F}} \ \qquad \text{By de morgans law} \\
+     &=&\overline{(A \cdot B \cdot \overline{F}} \cdot E) + \overline{C} \cdot \overline{D} \cdot F \ \qquad \text{By de morgans law and double negation} \\
+     &=&(\overline{A \cdot B} + \overline{\overline{F}}) \cdot E + \overline{C} \cdot \overline{D} \cdot F \ \qquad \text{By de morgans law} \\
+     &=&(\overline{A} + \overline{B} + F) \cdot E + \overline{C} \cdot \overline{D} \cdot F \ \qquad \text{By de morgans law and double negation} \\
+     &=&(\overline{A} + \overline{B}) \cdot E + F \cdot E + \overline{C} \cdot \overline{D} \cdot F \ \qquad \text{By de morgans law and double negation} \\
+\end{eqnarray*}
+
+\noindent This is expression $e$. So, the output generated by the circuit is described by both expressions $b$ and $e$.
+\newpage
+
+\begin{flushleft} 
+Problem 4 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent The table for the function $F(x,y,z)$ is copied below for reference:\\
+
+\begin{tabular}{| l | c | c | c | c |}
+\hline
+Row & x & y & z & F \\ \hline
+1 & 0 & 0 & 0 & 0 \\ \hline
+2 & 1 & 0 & 1 & 0 \\ \hline
+3 & 0 & 1 & 0 & 1 \\ \hline
+4 & 1 & 1 & 1 & 0 \\ \hline
+5 & 0 & 0 & 0 & 0 \\ \hline
+6 & 1 & 0 & 1 & 1 \\ \hline
+7 & 0 & 1 & 0 & 1 \\ \hline
+8 & 1 & 1 & 1 & 1 \\ \hline
+\end{tabular}\\ \\
+
+\noindent\framebox{Part a}\\ 
+
+\noindent The nonzero minterms occur in rows 3,6,7,8. The minterms for these rows are:\\
+
+\begin{tabular}{| l | c |}
+\hline
+Row & minterm \\ \hline
+3 & $\overline{x} \cdot y \cdot \overline{z}$ \\ \hline
+6 & $x \cdot \overline y \cdot z$ \\ \hline
+7 & $\overline{x} \cdot y \cdot \overline{z}$ \\ \hline
+8 & $x \cdot y \cdot z$ \\ \hline
+\end{tabular}\\ \\
+
+\noindent Note: row 3 produces the same minterm as row 6, so there are only 3 unique minterms.\\
+
+\noindent\framebox{Part b}\\ 
+
+\noindent The zero maxterms occur in rows 1,2,4,5. The maxterms for these rows are:\\
+
+\begin{tabular}{| l | c |}
+\hline
+Row & maxterm \\ \hline
+1 & $x + y + z$ \\ \hline
+2 & $\overline{x} + y + \overline{z}$ \\ \hline
+4 & $\overline{x} + \overline{y} + \overline{z}$ \\ \hline
+5 & $x + y + z$ \\ \hline
+\end{tabular}\\ \\
+
+\noindent Note: row 1 produces the same maxterm as row 5, so there are only 3 unique maxterms.\\
+\newpage
+
+\begin{flushleft} 
+Problem 5 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent The first two parts apply to the first circuit. The second two parts apply to the second circuit.\\
+
+\noindent\framebox{Part a}\\ 
+
+The complete table for the circuit is below:\\
+
+\begin{tabular}{| c | c | c |}
+\hline
+A & B & C \\ \hline
+0 & 0 & 1 \\ \hline
+0 & 1 & 0 \\ \hline
+1 & 0 & 1 \\ \hline
+1 & 1 & 1 \\ \hline
+\end{tabular}\\ \\
+
+\noindent\framebox{Part b}\\ 
+
+Using the table in part $a$ we can use the zero maxterms to define the function
+\[ C = f(A,B) = A + \overline{B}\]
+
+\noindent\framebox{Part c}\\ 
+
+
+The complete table for the circuit is below:\\
+
+\begin{tabular}{| c | c | c |}
+\hline
+A & B & C \\ \hline
+0 & 0 & 0 \\ \hline
+0 & 1 & 1 \\ \hline
+1 & 0 & 0 \\ \hline
+1 & 1 & 0 \\ \hline
+\end{tabular}\\ \\
+
+\noindent\framebox{Part d}\\ 
+
+Using the table in part $c$ we can use the zero maxterms to define the function
+\[ C = f(A,B) = \overline{A} \cdot B\]
+
+\end{document}  
