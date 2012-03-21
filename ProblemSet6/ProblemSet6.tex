@@ -36,8 +36,12 @@ Problem 1 \\
 
 \noindent\framebox{Part a}\\ 
 
+The conditional branch instruction is in the MEM stage when it is decided whether or not to branch, so the PC must be set in this stage. This way the new instruction will be available for the next cycle.\\
+
 \noindent\framebox{Part b}\\ 
 
+A jump instruction only needs to be pass through the ALU to perform the instruction address calculation. Since there is no decision process for an unconditional branch the PC may be set in the EX stage.
+\newpage
 
 \begin{flushleft} 
 Problem 2 \\
@@ -47,18 +51,74 @@ Problem 2 \\
 
 \noindent\framebox{Part a}\\ 
 
+The code sequence does not contain an infinite loop. The branch happens the first time because the value of $\$9$ is 1. Afterwards $\$9$ is decremented with an $\text{addi}\, \$9,\$9,-1$ and then stored with $\text{sw} \$9,16(\$8)$. This means that register $\$9$ holds the value 0. Immediately following this instruction is a load into register $\$9$ which the branch instruction uses to decide whether to branch. Since the value of $\$9$ is 0 the branch is not taken and the rest of the instructions are processed.\\
+
 \noindent\framebox{Part b}\\ 
 
+\noindent The table below shows the instruction sequence through the different stages of processing:\\
+
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+Cycle & Stage 1 (IF) & Stage 2 (ID) & Stage 3 (EX) & Stage 4 (MEM) & Stage 5 (WB) \\ \hline
+1 & lui \$8,0x200 & & & & \\ \hline
+2 & ori \$4,\$0,1 & lui \$8,0x200 & & & \\ \hline
+3 & sw \$4,16(\$8) & ori \$4,\$0,1 & lui \$8,0x200 & & \\ \hline
+4 & lw \$9,16(\$8) & sw \$4,16(\$8) & ori \$4,\$0,1 & lui \$8,0x200 & \\ \hline
+5 & sll \$4,\$4,1 & lw \$9,16(\$8) & sw \$4,16(\$8) & ori \$4,\$0,1 & lui \$8,0x200 \\ \hline
+6 & bne \$9,\$0,loop & sll \$4,\$4,1 & lw \$9,16(\$8) & sw \$4,16(\$8) & ori \$4,\$0,1 \\ \hline
+7 & nop & bne \$9,\$0,loop & sll \$4,\$4,1 & lw \$9,16(\$8) & sw \$4,16(\$8) \\ \hline
+8 & addi \$9,\$9,-1 & nop & bne \$9,\$0,loop & sll \$4,\$4,1 & lw \$9,16(\$8) \\ \hline
+9 & sw \$9,16(\$8) & addi \$9,\$9,-1 & nop & bne \$9,\$0,loop & sll \$4,\$4,1 \\ \hline
+10 & lw \$9,16(\$8) & sw \$9,16(\$8) & addi \$9,\$9,-1 & nop & bne \$9,\$0,loop \\ \hline
+11 & sll \$4,\$4,1,loop & lw \$9,16(\$8) & sw \$9,16(\$8) & addi \$9,\$9,-1 & nop  \\ \hline
+12 & bne \$9,\$0,loop & sll \$4,\$4,1 & lw \$9,16(\$8) & sw \$9,16(\$8) & addi \$9,\$9,-1 \\ \hline
+13 & nop & bne \$9,\$0,loop & sll \$4,\$4,1 & lw \$9,16(\$8) & sw \$9,16(\$8) \\ \hline
+14 & addi \$9,\$9,-1 & nop & bne \$9,\$0,loop & sll \$4,\$4,1 & lw \$9,16(\$8) \\ \hline
+15 & sw \$9,16(\$8) & addi \$9,\$9,-1 & nop & bne \$9,\$0,loop & sll \$4,\$4,1 \\ \hline
+16 & xor \$9,\$9,\$9 & sw \$9,16(\$8) & addi \$9,\$9,-1 & nop & bne \$9,\$0,loop \\ \hline
+17 & & xor \$9,\$9,\$9 & sw \$9,16(\$8) & addi \$9,\$9,-1 & nop  \\ \hline
+18 & & & xor \$9,\$9,\$9 & sw \$9,16(\$8) & addi \$9,\$9,-1  \\ \hline
+19 & & & & xor \$9,\$9,\$9 & sw \$9,16(\$8)  \\ \hline
+20 & & & & &xor \$9,\$9,\$9  \\ \hline
+20 & & & & &  \\ \hline
+\end{tabular}
+\newpage
 
 \begin{flushleft} 
 Problem 3 \\
 \rule{500pt}{1pt}\\
 \end{flushleft} 
 
+\noindent There are 8 data dependences:
+
+\begin{tabular}{c l}
+1.& sw \$4,16(\$8) depends on lui \$8,0x200 \\
+2.& lw \$9,16(\$8) depends on sw \$4,16(\$8) \\
+3.& sll \$4,\$4,1 depends on ori \$4,\$0,1 \\
+4.& bne \$9,\$0,loop depends on lw \$9,16(\$8) \\
+5.& addi \$9,\$9,-1 depends on lw \$9,16(\$8) \\
+6.& addi \$9,\$9,-1 depends on bne \$9,\$0,loop \\
+7.& xor \$9,\$9,\$9 depends on addi \$9,\$9,-1 \\
+8.& xor \$9,\$9,\$9 depends on sw \$9,16(\$8) \\
+\end{tabular}
 
 \begin{flushleft} 
 Problem 4 \\
 \rule{500pt}{1pt}\\
 \end{flushleft} 
+
+\noindent There are 7 data hazards
+
+\begin{tabular}{c l}
+1.&  lui \$8,0x200 is a data hazard for sw \$4,16(\$8)\\
+2.& sw \$4,16(\$8) is a data hazard for lw \$9,16(\$8)\\
+3.& ori \$4,\$0,1is a data hazard for sll \$4,\$4,1 depends on \\
+4.& lw \$9,16(\$8) is a data hazard for bne \$9,\$0,loop \\
+5.& bne \$9,\$0,loop is a data hazard for addi \$9,\$9,-1 \\
+6.& addi \$9,\$9,-1 is a data hazard for xor \$9,\$9,\$9 \\
+7.& sw \$9,16(\$8) is a data hazard for xor \$9,\$9,\$9 \\\\
+\end{tabular}
+
+lw \$9,16(\$8) is not a data hazard for addi \$9,\$9,-1 since register $\$9$ would be written before addi decodes.
 
 \end{document}  
