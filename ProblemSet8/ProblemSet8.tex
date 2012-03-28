@@ -1,0 +1,121 @@
+%\documentclass[11pt,reqno]{amsart}
+\documentclass[11pt,reqno]{article}
+\usepackage[margin=.8in, paperwidth=8.5in, paperheight=11in]{geometry}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent7
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{pstricks}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage{caption}
+\pagestyle{plain}
+%\renewcommand{\topfraction}{0.3}
+%\renewcommand{\bottomfraction}{0.8}
+%\renewcommand{\textfraction}{0.07}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Foundations of Computer Architecture: \\ Problem Set 7 }
+\author{Andrew Rickert}
+\date{Professor: Dr. Horace Malcolm \\ \hspace{-33pt} Due Date: March 27,  2012}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+
+% Page 1
+\begin{flushleft} 
+Problem 1 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+
+\noindent\framebox{Part a}\\ 
+
+The first data hazard is at the $xor$ instruction. Because $lui$ uses an immediate value the value for register $\$4$ can be forwarded as well as the value for $\$8$ from $addi$ since it will be in the writeback stage at this point. The final data hazards are in the $movz$ and $movn$ instructions. The data from the $xor$ can be forwarded after the execute stage in time to be used for register $\$9$ in the $movz$ instruction. This means there will be no stalls.
+
+The first instruction will consume 5 cycles with each additional instruction requiring an additional cycle to complete. There are 6 instructions after the first instruction so there will be a total of 11 required cycles.\\
+
+\noindent\framebox{Part b}\\ 
+
+The pipeline initially proceeds as before until we encounter the $bltz$ instruction. This instruction will decide whether or not to branch in the MEM phase of the pipeline. Looking at the instruction sequence we can see that register $\$8$ will have it's value forwarded to the $bltz$ instruction from the $addi$ instruction. Since this value is -16 the branch will be taken.
+By the time the branch is taken there will be three instructions in the pipeline. These are $move$, $b$, and $nop$. Assuming we flush all the instructions except the delayed branch means the final $move$ instruction will occur two cycles after the first move instruction (with two bubbles in between). The final nop instruction will follow.
+We can think of the bubbles as $nop$ and note that every instruction in the sequence is passes through the pipeline although the $b$ and first $nop$ instruction are flushed. There are no stalls o there are 5 cycles for the first instruction and 8 addition cycles for each instruction which gives a total of 13 cycles.\\
+
+\noindent\framebox{Part c}\\ 
+
+Since the xor of $0x80000000$ and $-16$ is not zero the first $move$ instruction does not effect the register so $\$12 = 12$. The second $move$ instruction will execute since $\$9 \neq 0$ so register $\$14 = \$5$.\\
+
+\noindent\framebox{Part d}\\ 
+
+Because both $move$ instructions are executed (one being in the delayed branch) the values in the register will be the results of these instructions. Register $\$14 = \$9$ and register $\$12 = \$5$
+\newpage
+
+\begin{flushleft} 
+Problem 2 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent - There is one RAW dependence. The instruction $lw \; \$7, 0(\$8)$ depends on $sw \; \$5,0(\$8)$\\
+\noindent - There are no WAR dependencies.\\
+\noindent - There is one WAW dependence. The instruction $lw \; \$8,44(\$5)$ writes to $\$8$ after $sw \; \$5,0(\$8)$ \\
+
+\begin{flushleft} 
+Problem 3 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent\framebox{Part a}\\ 
+
+Since there are no dependencies there will be no stalls. The first instruction will require 5 cycles and each of the 19 instructions will require an additional cycle for a total of 24 cycles.\\
+
+\noindent\framebox{Part b}\\ 
+
+After 5 cycles there will be $5 \times 3 = 18$ instructions in the pipeline. After another cycle the final two instructions will be in the pipeline. It will then take 4 more cycles to process these last instructions. This gives a total of 5 + 1 + 4 = 10 cycles.\\
+
+\noindent\framebox{Part c}\\ 
+
+This question is mathematically equivalent to that in part $b$. Instead of three instructions in three copies of a functional unit (in a clock cycle) we have three instructions in a single functional unit (in a clock cycle). This gives rise to the same calculation as above so 10 cycles are required.\\
+
+\noindent\framebox{Part d}\\ 
+
+With 3 pipelines and 3 phase we may place 9 instructions in the functional units in a clock cycle. The same is true in the next cycle. The final two instruction will be in the third cycle. Four more cycles will be required to process the final two instructions for a total of $1+1+1+ 4 = 7$ cycles.
+\newpage
+
+\begin{flushleft} 
+Problem 4 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+Cycle & Fetch & Decode & Execute & Memory & Write-back \\ \hline
+1 & lui \$8,0x200 & & & & \\ \hline
+2 & ori \$4,\$0,1 & lui \$8,0x200 & & & \\ \hline
+3 & sw \$4,16(\$8) & ori \$4,\$0,1 & lui \$8,0x200 & & \\ \hline
+4 & lw \$9,16(\$8) & sw \$4,16(\$8) & ori \$4,\$0,1 & lui \$8,0x200 & \\ \hline
+5 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble & ori \$4,\$0,1 & lui \$8,0x200 \\ \hline
+6 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble & bubble & ori \$4,\$0,1 \\ \hline
+7 & sll \$9,\$9,1 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble & bubble \\ \hline
+8 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble \\ \hline
+9 & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & sw \$4,16(\$8) \\ \hline
+10 & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) \\ \hline
+11 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 \\ \hline
+12 &  lw \$9,16(\$8) & nop & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop \\ \hline
+12 & sll \$9,\$9,1 & lw \$9,16(\$8) & nop & nop & addi \$4,\$4,-1 \\ \hline
+13 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & nop & nop \\ \hline
+14 & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & nop \\ \hline
+15 & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) \\ \hline
+16 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 \\ \hline
+17 & xor \$9,\$9,\$9 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop \\ \hline
+18 & & xor \$9,\$9,\$9 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 \\ \hline
+19 & & & xor \$9,\$9,\$9 & sw \$9,16(\$8) & nop \\ \hline
+20 & & & & xor \$9,\$9,\$9 & sw \$9,16(\$8) \\ \hline
+21 & & & & & xor \$9,\$9,\$9 \\ \hline
+\end{tabular}
+
+\end{document}  
