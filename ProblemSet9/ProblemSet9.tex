@@ -1,0 +1,210 @@
+%\documentclass[11pt,reqno]{amsart}
+\documentclass[11pt,reqno]{article}
+\usepackage[margin=.8in, paperwidth=8.5in, paperheight=11in]{geometry}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent7
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{pstricks}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage{caption}
+\pagestyle{plain}
+%\renewcommand{\topfraction}{0.3}
+%\renewcommand{\bottomfraction}{0.8}
+%\renewcommand{\textfraction}{0.07}
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+
+\title{Foundations of Computer Architecture: \\ Problem Set 9 }
+\author{Andrew Rickert}
+\date{Professor: Dr. Horace Malcolm \\ \hspace{-39pt} Due Date: April 10,  2012}                                           % Activate to display a given date or no date
+
+\begin{document}
+\maketitle
+
+
+% Page 1
+\begin{flushleft} 
+Problem 1 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent\framebox{Part a}\\ 
+
+For a fully associative cache we need to check all lines to find a hit or a miss. The number of tags that will be check will equal the number of lines in the cache. There are $768 \times 2^{10}$ bytes in the cache and each line has 128 instructions. If each instruction has 4 bytes then each line has $128 \times 4 = 512 = 2^9$ bytes. So the total number of tags to be checked is 
+\[ \text{tags checked} = \frac{768 \times 2^{10}}{2^9} = 768 \times 2 = 1536 \]
+
+\noindent\framebox{Part b}\\ 
+
+If we divide the 1536 lines into 4 'ways' then there will be $1536/4 = 384$ possible sets. Since $\log_2 384 = 8.585$ we will need 9 bits to cover all the sets. There will be $512 - 384 = 128$ bit combinations left over.
+\newpage
+
+\begin{flushleft} 
+Problem 2 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent\framebox{Part a}\\ 
+
+We assume that the address start from 0x000 and will be aligned at the boundaries 0x000, 0x004, 0x008, 0x00C, etc. The cache lines have two instructions per line so the blocks have the same size. This means that address 0x244 is in block 72, 0x248 is in block 73, 0x24C is in block 73 and so on.
+
+The cache line is found from the equation $L = M \, \text{mod} \, N$ where $M$ is the block number and $N$ is the number of cache lines (which is 4 here).
+
+\noindent \underline{Direct mapped cache}\\
+
+\begin{tabular}{| c | c | c | c |}
+\hline
+address & Block Number & Cache Line & Hit/Miss \\ \hline
+0x244 & 72 & 0 & Miss \\ \hline
+0x248 & 73 & 1 & Miss \\ \hline
+0x24C & 73 & 1 & Hit \\ \hline
+0x250 & 74 & 2 & Miss \\ \hline
+0x254 & 74 & 2& Hit \\ \hline
+0x258 & 75 & 3 & Miss \\ \hline
+0x25C & 75 & 3 & Hit \\ \hline
+0x260 & 76 & 0 & Miss \\ \hline
+0x264 & 76 & 0 & Hit \\ \hline
+0x268 & 77 & 1 & Miss \\ \hline
+0x26C & 77 & 1 & Hit \\ \hline
+0x250 & 74 & 2 & Hit \\ \hline
+0x254 & 74 & 2 & Hit \\ \hline
+0x258 & 75 & 3 & Hit \\ \hline
+0x25C & 75 & 3 & Hit \\ \hline
+0x260 & 76 & 0 & Hit \\ \hline
+0x264 & 76 & 0 & Hit \\ \hline
+0x268 & 77 & 1& Hit \\ \hline
+0x26C & 77 & 1 & Hit \\ \hline
+\end{tabular}\\
+\newpage 
+
+\noindent\framebox{Part b}\\ 
+
+Determining the set will come from the equation $L = M \, \text{mod} \, N$ but this time we take $N = 2$ since there will be two lines that will be associated with each other. The way will be determine based on whether there is an empty slot and if not the least recently used line will be replaced.
+
+\noindent \underline{Two-way set associative cache}\\
+
+\begin{tabular}{| c | c | c | c | c |}
+\hline
+address & Block Number & Set & Way & Hit/Miss \\ \hline
+0x244 & 72 & 0 & way0 & Miss \\ \hline
+0x248 & 73 & 1 & way0 & Miss \\ \hline
+0x24C & 73 & 1 & way0 & Hit \\ \hline
+0x250 & 74 & 0 & way1 & Miss \\ \hline
+0x254 & 74 & 0 & way1 & Hit \\ \hline
+0x258 & 75 & 1 & way1 & Miss \\ \hline
+0x25C & 75 & 1 & way1 & Hit \\ \hline
+0x260 & 76 & 0 & way0 & Miss \\ \hline
+0x264 & 76 & 0 & way0 & Hit \\ \hline
+0x268 & 77 & 1 & way0 & Miss \\ \hline
+0x26C & 77 & 1 & way0 & Hit \\ \hline
+0x250 & 74 & 0 & way1 & Hit \\ \hline
+0x254 & 74 & 0 & way1 & Hit \\ \hline
+0x258 & 75 & 1 & way1 & Hit \\ \hline
+0x25C & 75 & 1 & way1 & Hit \\ \hline
+0x260 & 76 & 0 & way0 & Hit \\ \hline
+0x264 & 76 & 0 & way0 & Hit \\ \hline
+0x268 & 77 & 1 & way0 & Hit \\ \hline
+0x26C & 77 & 1 & way0 & Hit \\ \hline
+\end{tabular}\\
+\newpage
+
+\noindent\framebox{Part c}\\ 
+
+The cache lines will be rotated through the cache in the fully associative cache setup.
+
+\noindent \underline{Fully associative cache}\\
+
+\begin{tabular}{| c | c | c | c |}
+\hline
+address & Block Number & Cache Line & Hit/Miss \\ \hline
+0x244 & 72 & line0 & Miss \\ \hline
+0x248 & 73 & line1 & Miss \\ \hline
+0x24C & 73 & line1 & Hit \\ \hline
+0x250 & 74 & line2 & Miss \\ \hline
+0x254 & 74 & line2 & Hit \\ \hline
+0x258 & 75 & line3 & Miss \\ \hline
+0x25C & 75 & line3 & Hit \\ \hline
+0x260 & 76 & line0 & Miss \\ \hline
+0x264 & 76 & line0 & Hit \\ \hline
+0x268 & 77 & line1 & Miss \\ \hline
+0x26C & 77 & line1 & Hit \\ \hline
+0x250 & 74 & line2 & Hit \\ \hline
+0x254 & 74 & line2 & Hit \\ \hline
+0x258 & 75 & line3 & Hit \\ \hline
+0x25C & 75 & line3 & Hit \\ \hline
+0x260 & 76 & line0 & Hit \\ \hline
+0x264 & 76 & line0 & Hit \\ \hline
+0x268 & 77 & line1& Hit \\ \hline
+0x26C & 77 & line1 & Hit \\ \hline
+\end{tabular}\\
+\newpage 
+
+\begin{flushleft} 
+Problem 3 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent\framebox{Part a}\\ 
+
+There will be 4 lines per set and each line has 128 bytes. The total number of bytes in a set will be $4 \times 128 = 512$. Since there are 4096 bytes of data in the cache there will be $4096/512 = 8$ sets.\\
+
+\noindent\framebox{Part b}\\ 
+
+The structure of the 32 bit address is the tag bits followed by the set number bits followed by the offset bits. Since there are 128 bytes in each line we will need 7 bits for the offset. Because there are 8 sets we need 3 bits to hold the set value. The remaining 32 - 7 - 3 = 22 bits are used for the tag.\\
+We will report the tag (the first 22 bits of the address) in the table below as a decimal.\\
+
+\begin{tabular}{| c | c | c | c | c | c |}
+\hline
+address & TAG & Set & Way & LRU Bits & Hit/Miss \\ \hline
+293824 = 00000000 00000100 01111011 11000000 & 286 & 8 & 0 & 011 & Miss \\ \hline
+\hspace{11pt}2948 = 00000000 00000000 00001011 10000100 & 2 & 8 & 1 & 001 & Miss \\ \hline
+\hspace{5pt}41728 = 00000000 00000000 10100011 00000000 & 40 & 7 & 0 & 011 & Miss\\ \hline
+\hspace{11pt}3072 = 00000000 00000000 00001100 00000000 & 3 & 0 & 0 & 011 & Miss\\ \hline
+\hspace{11pt}1920 = 00000000 00000000 00000111 10000000 & 1 & 8 & 2 & 100 & Miss \\ \hline
+\hspace{11pt}5016 = 00000000 00000000 00010011 10011000 & 4 & 8 & 3 & 000 & Miss \\ \hline
+\hspace{11pt}6536 = 00000000 00000000 00011001 10001000 & 6 & 3 & 0 & 011 & Miss \\ \hline
+293764 = 00000000 00000100 01111011 10000100 & 286 & 8 & 0 & 011 & Hit \\ \hline
+\hspace{11pt}4088 = 00000000 00000000 00001111 11111000 & 3 & 8 & 2 & 110 & Miss \\ \hline
+\hspace{11pt}3184 = 00000000 00000000 00001100 01110000 & 3 & 0 & 0 & 011 & Hit \\ \hline
+\end{tabular}\\
+\vspace{10pt}
+
+\noindent\framebox{Part c}\\ 
+
+There was one replacement when set 8 was full and the address 4088 missed the cache.\\
+
+\noindent\framebox{Part d}\\ 
+
+For the replacement in set 8 the LRU bits required that way 2 be replaced.\\
+
+\noindent\framebox{Part e}\\ 
+
+The replacement of way 2 in set 8 was premature, way 1 was the least recently used since way 0 had been accessed just before.
+\newpage
+
+\begin{flushleft} 
+Problem 4 \\
+\rule{500pt}{1pt}\\
+\end{flushleft} 
+
+\noindent\framebox{Part a}\\ 
+
+The average access time, $TA$, for a look-through cache can be determined from the following equation
+\[ TA =  TC  + (1 - h) \cdot TM\]
+where $TC$ is the average cache access time and $TM$ is the average main memory access time.
+
+We are given that $TA = 22 \; ns$ and that $TC = 10 \; ns$ and $TM = 120 \; ns$. If we solve the above equation for $h$ then we get:
+\[ h = 1- \frac{TA - TC}{TM} \]
+Inputing the stated values gives the value for the hit ratio $h = 0.10$ or 10 percent.\\
+
+\noindent\framebox{Part b}\\ 
+
+The average read access time for the cache in look-aside mode will be given by the equation
+\[ TA_{read} =  h \cdot TC  + (1 - h) \cdot TM\]
+Using the given value for $h$ gives $TA_{read} = 0.85 \cdot 10 \; ns + 0.15 \cdot 120 \; ns = 26.5 \; ns$.
+
+\end{document}  

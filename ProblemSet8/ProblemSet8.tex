@@ -19,9 +19,9 @@
 %\renewcommand{\textfraction}{0.07}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 
-\title{Foundations of Computer Architecture: \\ Problem Set 7 }
+\title{Foundations of Computer Architecture: \\ Problem Set 8 }
 \author{Andrew Rickert}
-\date{Professor: Dr. Horace Malcolm \\ \hspace{-33pt} Due Date: March 27,  2012}                                           % Activate to display a given date or no date
+\date{Professor: Dr. Horace Malcolm \\ \hspace{-46pt} Due Date: April 3,  2012}                                           % Activate to display a given date or no date
 
 \begin{document}
 \maketitle
@@ -33,26 +33,32 @@ Problem 1 \\
 \rule{500pt}{1pt}\\
 \end{flushleft} 
 
-
 \noindent\framebox{Part a}\\ 
 
-The first data hazard is at the $xor$ instruction. Because $lui$ uses an immediate value the value for register $\$4$ can be forwarded as well as the value for $\$8$ from $addi$ since it will be in the writeback stage at this point. The final data hazards are in the $movz$ and $movn$ instructions. The data from the $xor$ can be forwarded after the execute stage in time to be used for register $\$9$ in the $movz$ instruction. This means there will be no stalls.
+For the string "Spring 2014" the first character in the big endian format would be '4', then '1' and so on. The characters at addresses ending in 4,5,6 and B will be '4','1','0' and 'i' respectively. These values are converted to ASCII then entered into the table below in hexadecimal notation.\\
 
-The first instruction will consume 5 cycles with each additional instruction requiring an additional cycle to complete. There are 6 instructions after the first instruction so there will be a total of 11 required cycles.\\
+\begin{tabular}{| c | c |}
+\hline
+Address & Contents \\ \hline
+0x100C004 & 0x34\\ \hline
+0x100C005 & 0x31\\ \hline
+0x100C006 & 0x30\\ \hline
+0x100C00B & 0x69\\ \hline
+\end{tabular}
+\vspace{10pt}
 
 \noindent\framebox{Part b}\\ 
 
-The pipeline initially proceeds as before until we encounter the $bltz$ instruction. This instruction will decide whether or not to branch in the MEM phase of the pipeline. Looking at the instruction sequence we can see that register $\$8$ will have it's value forwarded to the $bltz$ instruction from the $addi$ instruction. Since this value is -16 the branch will be taken.
-By the time the branch is taken there will be three instructions in the pipeline. These are $move$, $b$, and $nop$. Assuming we flush all the instructions except the delayed branch means the final $move$ instruction will occur two cycles after the first move instruction (with two bubbles in between). The final nop instruction will follow.
-We can think of the bubbles as $nop$ and note that every instruction in the sequence is passes through the pipeline although the $b$ and first $nop$ instruction are flushed. There are no stalls o there are 5 cycles for the first instruction and 8 addition cycles for each instruction which gives a total of 13 cycles.\\
+For the string "Spring 2014" the first character in the little endian format would be 'S', then 'p' and so on. The characters at addresses ending in 4,5,6 and B will be 'S','p','r' and '2' respectively. These values are converted to ASCII then entered into the table below in hexadecimal notation.\\
 
-\noindent\framebox{Part c}\\ 
-
-Since the xor of $0x80000000$ and $-16$ is not zero the first $move$ instruction does not effect the register so $\$12 = 12$. The second $move$ instruction will execute since $\$9 \neq 0$ so register $\$14 = \$5$.\\
-
-\noindent\framebox{Part d}\\ 
-
-Because both $move$ instructions are executed (one being in the delayed branch) the values in the register will be the results of these instructions. Register $\$14 = \$9$ and register $\$12 = \$5$
+\begin{tabular}{| c | c |}
+\hline
+Address & Contents \\ \hline
+0x100C004 & 0x53\\ \hline
+0x100C005 & 0x70\\ \hline
+0x100C006 & 0x72\\ \hline
+0x100C00B & 0x32\\ \hline
+\end{tabular}
 \newpage
 
 \begin{flushleft} 
@@ -60,9 +66,19 @@ Problem 2 \\
 \rule{500pt}{1pt}\\
 \end{flushleft} 
 
-\noindent - There is one RAW dependence. The instruction $lw \; \$7, 0(\$8)$ depends on $sw \; \$5,0(\$8)$\\
-\noindent - There are no WAR dependencies.\\
-\noindent - There is one WAW dependence. The instruction $lw \; \$8,44(\$5)$ writes to $\$8$ after $sw \; \$5,0(\$8)$ \\
+The table below contains the contents of the register $\$t0$ for load instruction in the big and little endian formats:\\
+
+\begin{tabular}{| c | c | c |}
+\hline
+& Big Endian & Little Endian \\ \hline
+lw \$t0,0(\$t1) & 0xA987D543 & 0x43D587A9 \\ \hline
+lhu \$t0,2(\$t1) & 0x0000D543 & 0x000043D5 \\ \hline
+lb \$t0,3(\$t1) & 0x00000043 & 0x00000043 \\ \hline
+lbu \$t0,0(\$t1) & 0x000000A9 & 0x000000A9 \\ \hline
+lb \$t0,1(\$t1) & 0xFFFFFF87 & 0xFFFFFF87 \\ \hline
+lh \$t0,2(\$t1) & 0xFFFFD543 & 0x000043D5\\ \hline
+\end{tabular}
+\newpage
 
 \begin{flushleft} 
 Problem 3 \\
@@ -71,51 +87,68 @@ Problem 3 \\
 
 \noindent\framebox{Part a}\\ 
 
-Since there are no dependencies there will be no stalls. The first instruction will require 5 cycles and each of the 19 instructions will require an additional cycle for a total of 24 cycles.\\
+The total number of bytes in the system is $128 \times 2^{20} = 2^{27}$ bytes. The number of bytes in a module is $134217728/8 = 16777216$. This gives the number of modules as $2^{27}/16777216 = 8$.\\
 
 \noindent\framebox{Part b}\\ 
 
-After 5 cycles there will be $5 \times 3 = 18$ instructions in the pipeline. After another cycle the final two instructions will be in the pipeline. It will then take 4 more cycles to process these last instructions. This gives a total of 5 + 1 + 4 = 10 cycles.\\
+From the previous part of the problem we derived $D = 134217728/W = 134217728/8 = 16777216$.\\
 
 \noindent\framebox{Part c}\\ 
 
-This question is mathematically equivalent to that in part $b$. Instead of three instructions in three copies of a functional unit (in a clock cycle) we have three instructions in a single functional unit (in a clock cycle). This gives rise to the same calculation as above so 10 cycles are required.\\
+The MAR's in this memory system are 32-bits wide. We have calculated there to be 8 separate modules to address. To locate one of the 8 modules we need 3 bits from an assumed 32 bit address bus. Because we are considering a high order interleaving we have the following address format:\\
+
+\begin{tabular}{| c | c |}
+\hline
+XXX & XXXXX XXXXX XXXXX XXXXX XXXXX XXXX \\ \hline
+module & offset \\ \hline
+\end{tabular}\\
+
+However since each module only has 16777216 bytes we only need 24 bits to represent the offset since $2^{24} = 16777216$. This would give the address format as:\\
+
+\begin{tabular}{| c | c |}
+\hline
+XXX & XXXXX XXXXX XXXXX XXXXX XXXX \\ \hline
+module & offset \\ \hline
+\end{tabular}\\
+\vspace{10pt}
 
 \noindent\framebox{Part d}\\ 
 
-With 3 pipelines and 3 phase we may place 9 instructions in the functional units in a clock cycle. The same is true in the next cycle. The final two instruction will be in the third cycle. Four more cycles will be required to process the final two instructions for a total of $1+1+1+ 4 = 7$ cycles.
-\newpage
+\noindent For lower order interleaving in our 8 module system with a 32-bit bus we have the following address format:\\
 
-\begin{flushleft} 
-Problem 4 \\
-\rule{500pt}{1pt}\\
-\end{flushleft} 
-
-\begin{tabular}{| c | c | c | c | c | c |}
+\begin{tabular}{| c | c |}
 \hline
-Cycle & Fetch & Decode & Execute & Memory & Write-back \\ \hline
-1 & lui \$8,0x200 & & & & \\ \hline
-2 & ori \$4,\$0,1 & lui \$8,0x200 & & & \\ \hline
-3 & sw \$4,16(\$8) & ori \$4,\$0,1 & lui \$8,0x200 & & \\ \hline
-4 & lw \$9,16(\$8) & sw \$4,16(\$8) & ori \$4,\$0,1 & lui \$8,0x200 & \\ \hline
-5 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble & ori \$4,\$0,1 & lui \$8,0x200 \\ \hline
-6 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble & bubble & ori \$4,\$0,1 \\ \hline
-7 & sll \$9,\$9,1 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble & bubble \\ \hline
-8 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & sw \$4,16(\$8) & bubble \\ \hline
-9 & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & sw \$4,16(\$8) \\ \hline
-10 & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) \\ \hline
-11 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 \\ \hline
-12 &  lw \$9,16(\$8) & nop & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop \\ \hline
-12 & sll \$9,\$9,1 & lw \$9,16(\$8) & nop & nop & addi \$4,\$4,-1 \\ \hline
-13 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & nop & nop \\ \hline
-14 & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) & nop \\ \hline
-15 & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 & lw \$9,16(\$8) \\ \hline
-16 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop & sll \$9,\$9,1 \\ \hline
-17 & xor \$9,\$9,\$9 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 & bne \$4,\$0,loop \\ \hline
-18 & & xor \$9,\$9,\$9 & sw \$9,16(\$8) & nop & addi \$4,\$4,-1 \\ \hline
-19 & & & xor \$9,\$9,\$9 & sw \$9,16(\$8) & nop \\ \hline
-20 & & & & xor \$9,\$9,\$9 & sw \$9,16(\$8) \\ \hline
-21 & & & & & xor \$9,\$9,\$9 \\ \hline
+XXXX XXXXX XXXXX XXXXX XXXXX XXXXX & XXX \\ \hline
+module & offset \\ \hline
 \end{tabular}
+\vspace{10pt}\\
+Since we only need 24 bits to represent the offset we could have the following address format:\\
+
+\begin{tabular}{| c | c |}
+\hline
+XXXX XXXXX XXXXX XXXXX XXXXX & XXX\\ \hline
+module & offset \\ \hline
+\end{tabular}\\
+\vspace{10pt}
+
+\noindent\framebox{Part e}\\ 
+
+As shown in the previous parts we need 3 lines to select the module. We would also need at minimum 24 lines to select the cell if we were not assuming word aligned 4 byte accesses. Since we are assuming the addressing is word aligned we can remove two of the lines and logical shift the value to get the offset. This gives a total of $3 + 24 - 2 = 25$ required lines.\\
+
+\noindent\framebox{Part f}\\ 
+
+If we could not be certain that the memory element we are looking for is on the word boundary then we would need to have the possibility of addressing non-4-byte word aligned addresses. This would mean that would could not use the optimization of removing two lines from the address bus which would \emph{increase} the size of the address bus.\\
+
+\noindent\framebox{Part g}\\ 
+
+Since we have 8 modules to query we use the first three bits of the address for low order interleaving. The lower three bits of $0x00040084$ are 100 which represents a 4. So this address will be in the 5th module (if we call the module 0 the first module).\\
+
+\noindent\framebox{Part h}\\ 
+
+Since we have 8 modules to query we use the last three bits of the address for low order interleaving. The lower three bits of $0x00040084$ are 000 which represents a 0. So this address will be in the 1st module (if we call the module 0 the first module).\\
+
+\noindent\framebox{Part i}\\ 
+
+The answer depends on whether sequential accesses to data are common or not. In the case that they are then a high order interleaved memory might not be a good solution. This is because many accesses would have to be made to the same module which might slow down processing.
 
 \end{document}  
